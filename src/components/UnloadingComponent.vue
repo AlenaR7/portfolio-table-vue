@@ -2,7 +2,7 @@
     <v-btn
             color="green"
             dark
-            @click="getData(), getExcel()">
+            @click="getExcel()">
         <span v-if="!downloadBtn">
             <v-icon left>
                     {{ icons.mdiDownload}}
@@ -23,7 +23,6 @@
         name: 'unloadingComponent',
         data: function () {
             return {
-                check: false,
                 downloadText: 'Скачать в xlsx',
                 downloadTextWaiting: 'Пожалуйста, подождите...',
                 downloadBtn: false,
@@ -33,13 +32,9 @@
             }
         },
         methods: {
-            getData() {
-                this.check = true;
-                this.$store.dispatch('getAllProducts');
-            },
             getExcel() {
                 this.downloadBtn = true;
-                if (this.check && this.objProducts) {
+                if (this.objProducts) {
                     this.unloadingExcel();
                 }
             },

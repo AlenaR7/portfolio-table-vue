@@ -77,12 +77,11 @@
                             <v-col cols="3" class="d-flex justify-end pt-5">
                                 <unloadingComponent></unloadingComponent>
                                 <v-dialog v-model="dialog" max-width="500px">
-                                    <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:activator="{on}">
                                         <v-btn
                                                 color="primary"
                                                 class="ml-4"
                                                 dark
-                                                v-bind="attrs"
                                                 v-on="on"
                                         >
                                             <v-icon left>
@@ -150,51 +149,6 @@
                 <template v-slot:item.calories="{ item }">
                     <v-chip :color="getColor(item.calories)" dark>{{ item.calories }}</v-chip>
                 </template>
-                <template v-slot:item.product="props">
-                    <v-edit-dialog
-                            :return-value.sync="props.item.product"
-                            @save="save"
-                            @cancel="cancel"
-                            @open="open"
-                            @close="close"
-                    > {{ props.item.product }}
-                        <template v-slot:input>
-                            <v-text-field
-                                    v-model="props.item.product"
-                                    :rules="[max25chars]"
-                                    label="Edit"
-                                    single-line
-                                    counter
-                            ></v-text-field>
-                        </template>
-                    </v-edit-dialog>
-                </template>
-                <template v-slot:item.iron="props">
-                    <v-edit-dialog
-                            :return-value.sync="props.item.iron"
-                            large
-                            persistent
-                            @save="save"
-                            @cancel="cancel"
-                            @open="open"
-                            @close="close"
-                    >
-                        <div>{{ props.item.iron }}</div>
-                        <template v-slot:input>
-                            <div class="mt-4 title">Обновить</div>
-                        </template>
-                        <template v-slot:input>
-                            <v-text-field
-                                    v-model="props.item.iron"
-                                    :rules="[max25chars]"
-                                    label="Edit"
-                                    single-line
-                                    counter
-                                    autofocus
-                            ></v-text-field>
-                        </template>
-                    </v-edit-dialog>
-                </template>
                 <template
                         v-slot:body
                         v-if="headerTable.length === 0"
@@ -227,8 +181,8 @@
             </v-data-table>
             <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
                 {{ snackText }}
-                <template v-slot:action="{ attrs }">
-                    <v-btn v-bind="attrs" text @click="snack = false">Закрыть</v-btn>
+                <template #action>
+                    <v-btn text @click="snack = false">Закрыть</v-btn>
                 </template>
             </v-snackbar>
         </v-card>
@@ -336,28 +290,10 @@
             unloadingComponent,
         },
         methods: {
-            save() {
-                this.snack = true;
-                this.snackColor = 'success';
-                this.snackText = 'Данные сохранены';
-            },
-            cancel() {
-                this.snack = true;
-                this.snackColor = 'error';
-                this.snackText = 'Отменено';
-            },
-            open() {
-                this.snack = true;
-                this.snackColor = 'info';
-                this.snackText = 'Окно открыто';
-            },
-            close() {
-                console.log('Окно закрыто');
-            },
             getColor(calories) {
                 if (calories > 400) return 'red';
                 if (calories > 200) return 'orange';
-                return 'green'
+                return 'green';
             },
             editItem(item) {
                 this.editedIndex = this.bodyTable.indexOf(item);
@@ -379,13 +315,11 @@
                     });
             },
 
-            closeWindow() {
+            async closeWindow() {
                 this.dialog = false;
-                this.$nextTick(() => {
-                    this.editedItem = Object.assign({}, this.defaultItem);
-                    this.editedItem = Object.assign({}, this.defaultItem);
-                    this.editedIndex = -1;
-                })
+                await this.$nextTick();
+                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedIndex = -1;
             },
             saveWindow() {
                 if (this.editedIndex > -1) {
@@ -405,14 +339,9 @@
 
                 this.selected = [];
             },
-            toggle() {
-                this.$nextTick(() => {
-                    if (this.likesAllFruit) {
-                        this.headerTable = [];
-                    } else {
-                        this.headerTable = this.headerOptions.slice();
-                    }
-                })
+            async toggle() {
+                await this.$nextTick();
+                this.headerTable = (this.likesAllFruit) ? [] : this.headerOptions.slice();
             },
             modalDeleteItem(param) {
                 this.show = false;
