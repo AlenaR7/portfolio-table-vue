@@ -18,6 +18,7 @@
     import {
         mdiDownload,
     } from '@mdi/js';
+    import { mapGetters } from 'vuex';
 
     export default {
         name: 'unloadingComponent',
@@ -51,15 +52,12 @@
             },
         },
         computed: {
-            allExcelObj() {
-                return this.$store.getters.getAllExcelObj;
-            },
-            dataTableProducts() {
-                return this.$store.getters.getProductsData;
-            },
-            objProducts() {
-                return this.$store.getters.getDoneObjProducts;
-            },
+            ...mapGetters({
+                allExcelObj: 'getAllExcelObj',
+                dataTableProducts: 'getProductsData',
+                objProducts: 'getDoneObjProducts',
+            }),
+
             checkReceivingData() {
                 return this.objProducts;
             },
